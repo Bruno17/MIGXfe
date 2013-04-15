@@ -97,8 +97,8 @@ if (!class_exists('revoChunkie')) {
          * @param string $keypath The string separated by dot sign $key will
          * be prefixed with
          */
-        public function createVars($value = '', $key = '', $keypath = '') {
-            $this->depth++;
+        public function createVars($value = '', $key = '', $keypath = '', $depth = 0) {
+            $depth++;
 
             if ($this->depth > $this->maxdepth) {
                 return;
@@ -109,8 +109,7 @@ if (!class_exists('revoChunkie')) {
             if (is_array($value)) {
 
                 foreach ($value as $subkey => $subval) {
-                    $this->createVars($subval, $subkey, $keypath);
-                    $this->depth--;
+                    $this->createVars($subval, $subkey, $keypath, $depth);
                 }
             } else {
 

@@ -93,12 +93,14 @@ class modTemplateVarInputRenderMigx extends modTemplateVarInputRenderMigxFe {
 
         $this->migx->prepareGrid($params, $this, $this->tv, $columns);
         //$grid = $this->migx->getGrid();
+        
+        //print_r($this->controller->getPlaceholders());  
 
         $filenames = array();
         $defaultpath = $this->migx->config['templatesPath'] . 'mgr/';
         $filename = 'iframewindow.tpl';
         if ($windowfile = $this->migx->findGrid($defaultpath, $filename, $filenames)) {
-            $this->setPlaceholder('iframewindow', $this->migx->replaceLang($this->modx->controller->fetchTemplate($windowfile)));
+            //$this->setPlaceholder('iframewindow', $this->migx->replaceLang($this->modx->controller->fetchTemplate($windowfile)));
         }
         
         //$newitem[] = $item;

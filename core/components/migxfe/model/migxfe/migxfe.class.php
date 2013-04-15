@@ -855,13 +855,14 @@ class MigxFe {
         $controller->setPlaceholder('migx_lang', $this->modx->toJSON($this->migxlang));
         $controller->setPlaceholder('properties', $properties);
         $controller->setPlaceholder('resource', $resource);
+        $controller->setPlaceholder('columns', $this->modx->toJSON($cols));
         $controller->setPlaceholder('configs', $this->config['configs']);
         $controller->setPlaceholder('reqConfigs', $this->modx->getOption('configs', $_REQUEST, ''));
         $controller->setPlaceholder('object_id', $this->modx->getOption('object_id', $_REQUEST, ''));
         $controller->setPlaceholder('reqTempParams', $this->modx->getOption('tempParams', $_REQUEST, ''));
         $controller->setPlaceholder('connected_object_id', $this->modx->getOption('object_id', $_REQUEST, ''));
         $controller->setPlaceholder('pathconfigs', $this->modx->toJSON($pathconfigs));
-        $controller->setPlaceholder('columns', $this->modx->toJSON($cols));
+        
         $controller->setPlaceholder('fields', $this->modx->toJSON($fields));
         $controller->setPlaceholder('newitem', $this->modx->toJSON($newitem));
         $controller->setPlaceholder('base_url', $this->modx->getOption('base_url'));
@@ -870,6 +871,8 @@ class MigxFe {
         $controller->setPlaceholder('customconfigs', $this->customconfigs);
         $controller->setPlaceholder('win_id', !empty($this->customconfigs['win_id']) ? $this->customconfigs['win_id'] : $win_id);
         $controller->setPlaceholder('update_win_title', !empty($this->customconfigs['update_win_title']) ? $this->customconfigs['update_win_title'] : 'MIGXfe');
+        //print_r($controller->controller->getPlaceholders());
+ 
 
     }
 
