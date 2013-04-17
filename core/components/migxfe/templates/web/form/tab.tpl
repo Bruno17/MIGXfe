@@ -1,5 +1,5 @@
 {
-    id : 'modx-tv-tab[[+id]]',
+    //id : 'modx-tv-tab[[+id]]',
     tabConfig: {
         title: '[[+category]]',
         tooltip: ''

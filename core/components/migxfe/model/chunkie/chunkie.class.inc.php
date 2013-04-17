@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Name: revoChunkie
+ * Name: migxfeChunkie
  * Original name: Chunkie
  * Version: 2.0
  * 
@@ -12,9 +12,9 @@
  * Date: Mar 11, 2013
  */
 
-if (!class_exists('revoChunkie')) {
+if (!class_exists('migxfeChunkie')) {
 
-    class revoChunkie {
+    class migxfeChunkie {
 
         /**
          * The name of a MODX chunk (could be prefixed by @FILE, @INLINE or
@@ -56,12 +56,12 @@ if (!class_exists('revoChunkie')) {
         private $maxdepth;
 
         /**
-         * revoChunkie constructor
+         * migxfeChunkie constructor
          *
          * @param string $template Name of MODX chunk
          * @param string $basepath Basepath @FILE is prefixed with.
          */
-        public function revoChunkie($template = '', $basepath = '', $addCore = true) {
+        public function migxfeChunkie($template = '', $basepath = '', $addCore = true) {
             global $modx;
             $this->basepath = ($basepath == '' && $addCore) ? $modx->getOption('core_path') : $basepath;
             $this->template = $this->getTemplate($template);
@@ -100,7 +100,7 @@ if (!class_exists('revoChunkie')) {
         public function createVars($value = '', $key = '', $keypath = '', $depth = 0) {
             $depth++;
 
-            if ($this->depth > $this->maxdepth) {
+            if ($depth > $this->maxdepth) {
                 return;
             }
 

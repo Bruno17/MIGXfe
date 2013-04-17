@@ -51,10 +51,11 @@
     width: '100%',
     hiddenFieldName: 'tv[[+tv.id]]', 
     valuename:'original[[+request.win_id]]-[[+tv.id]]',
-    win_id:'[[+request.win_id]]'
+    win_id:'[[+request.win_id]]',
+    tv_name:'[[+tv.name]]'
 },{
         xtype: 'migxValueHidden',
-        id:'tv[[+tv.id]]',
+        id:'tv[[+tv.id]]-[[+request.win_id]]',
         name:'tv[[+tv.id]]',      
         margin: '0',
         valuename:'original[[+request.win_id]]-[[+tv.id]]'

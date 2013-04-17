@@ -1,6 +1,6 @@
 {
         xtype: 'listbox_single'
-        ,id: 'tv[[+tv.id]]'
+        ,id: 'tv[[+tv.id]]-[[+request.win_id]]'
         ,name: 'tv[[+tv.id]]'
         ,triggerAction: 'all'
         ,width: 400

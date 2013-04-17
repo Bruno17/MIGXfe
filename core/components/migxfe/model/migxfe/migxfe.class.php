@@ -535,9 +535,8 @@ class MigxFe {
         } else {
             $win_id = 'migxdb';
             $tv = $this->modx->newObject('modTemplateVar');
-            $controller->setPlaceholder('tv', $tv);
         }
-
+        $controller->setPlaceholder('tv', $tv->toArray());
         $tv_id = $tv->get('id');
         $tv_id = empty($tv_id) && isset($properties['tv_id']) ? $properties['tv_id'] : $tv_id;
 

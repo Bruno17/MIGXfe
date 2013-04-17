@@ -1,6 +1,6 @@
 {
         xtype: 'migx_textarea'
-        ,id:'tv[[+tv.id]]'
+        ,id:'tv[[+tv.id]]-[[+request.win_id]]'
         ,name:'tv[[+tv.id]]'
         ,width: '100%'
         ,height: 200

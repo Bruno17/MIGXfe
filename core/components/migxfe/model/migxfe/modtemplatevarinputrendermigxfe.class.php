@@ -23,7 +23,7 @@ abstract class modTemplateVarRenderMigxFe {
         
         $xtype_template = str_replace('.tpl','.xtype.tpl',$template);
         $this->tv->set('xtype_template',$corePath.'templates/'.$xtype_template);
-        $this->controller = new revoChunkie('@FILE ' . $template,$corePath.'templates/');
+        $this->controller = new migxfeChunkie('@FILE ' . $template,$corePath.'templates/');
         $this->setReplaceonlyfields('tv.value');
         
     }

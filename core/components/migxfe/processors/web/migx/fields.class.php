@@ -16,12 +16,12 @@ class migxFormProcessor extends modProcessor {
         //$migx = new Migx($this->modx);
         $modx = &$this->modx;
 
-        $corePath = dirname(dirname(dirname(__file__))) . '/';
+        $corePath = dirname(dirname(dirname(dirname(__file__)))) . '/';
         require_once $corePath . 'model/chunkie/chunkie.class.inc.php';
         //require_once $modx->getOption('core_path') . 'model/modx/modtemplatevar.class.php';
         require_once $corePath . '/model/migxfe/modtemplatevarinputrendermigxfe.class.php';
         $template = '@FILE form.tpl';
-        $controller = new revoChunkie($template, $corePath . 'templates/web/form/');
+        $controller = new migxfeChunkie($template, $corePath . 'templates/web/form/');
 
         $scriptProperties = $this->getProperties();
 
@@ -55,6 +55,26 @@ class migxFormProcessor extends modProcessor {
         }
 
         //$controller->setPlaceholder('_config', $this->modx->config);
+        //get the MIGX-TV
+        $properties = array();
+        
+        
+        
+        if ($tv = $this->modx->getObject('modTemplateVar', array('name' => $scriptProperties['tv_name']))) {
+            $this->modx->migxfe->source = $tv->getSource($this->modx->migxfe->working_context, false);
+            $properties = $tv->get('input_properties');
+            //$properties = isset($properties['formtabs']) ? $properties : $tv->getProperties();
+        }
+
+        $configs = !empty($this->modx->migxfe->config['configs']) ? $this->modx->migxfe->config['configs'] : '';
+        $configs = isset($properties['configs']) && !empty($properties['configs']) ? $properties['configs'] : $configs;
+
+        if (!empty($configs)) {
+            $this->modx->migxfe->config['configs'] = $configs;
+            $this->modx->migxfe->loadConfigs(true,true,$scriptProperties,$sender);
+        }        
+        
+        /*
         $task = $this->modx->migxfe->getTask();
         $filename = str_replace(array('.class', '.php'), '', basename(__file__)) . $action . '.php';
         $processorspath = $this->modx->migxfe->config['migxCorePath'] . 'processors/mgr/';
@@ -63,36 +83,99 @@ class migxFormProcessor extends modProcessor {
             $processor_file;
             include_once ($processor_file);
         }
-
-        //$object = $this->modx->getObject('Angebote',$scriptProperties['angebot']);
-        //if (empty($object)) return $this->modx->error->failure($this->modx->lexicon('quip.thread_err_nf'));
-        //if (!$thread->checkPolicy('view')) return $this->modx->error->failure($this->modx->lexicon('access_denied'));
-
-        //return $this->modx->error->success('',$angebot);
-
-        //echo '<pre>'.print_r($angebot->toArray(),1).'</pre>';
-
+        */
         $sender = isset($sender) ? $sender : '';
 
-        $this->modx->migxfe->loadConfigs(true, true, $scriptProperties, $sender);
-        $tabs = $this->modx->migxfe->getTabs();
+        //$this->modx->migxfe->loadConfigs(true, true, $scriptProperties, $sender);
+        $formtabs = $this->modx->migxfe->getTabs();
+        
+        
+        $fieldid = 0;
+        /*actual record */
+        $record = $this->modx->fromJSON($scriptProperties['record_json']);
+
+        $allfields = array();
+        $formnames = array();
+
+        $field = array();
+        $field['field'] = 'MIGX_id';
+        $field['tv_id'] = 'migxid';
+        $allfields[] = $field;
+        if ($scriptProperties['isnew'] == '1') {
+            $migxid = $scriptProperties['autoinc'] + 1;
+        } else {
+            $migxid = $record['MIGX_id'];
+        }
+        $controller->setPlaceholder('migxid', $migxid);
+        
+        $formtabs = $this->modx->migxfe->checkMultipleForms($formtabs,$controller,$allfields,$record);
+
+        if (empty($formtabs)) {
+
+            //old stuff
+            $default_formtabs = '[{"caption":"Default", "fields": [{"field":"title","caption":"Title"}]}]';
+            $formtabs = $this->modx->fromJSON($this->modx->getOption('formtabs', $properties,
+                $default_formtabs));
+            $formtabs = empty($properties['formtabs']) ? $this->modx->fromJSON($default_formtabs) :
+                $formtabs;
+            $fieldid = 0;
+            $tabid = 0;
+
+            //multiple different Forms
+            // Note: use same field-names and inputTVs in all forms
+            if (isset($formtabs[0]['formtabs'])) {
+                $forms = $formtabs;
+                $tabs = array();
+                foreach ($forms as $form) {
+                    $formname = array();
+                    $formname['value'] = $form['formname'];
+                    $formname['text'] = $form['formname'];
+                    $formname['selected'] = 0;
+                    if ($form['formname'] == $record['MIGX_formname']) {
+                        $formname['selected'] = 1;
+                    }
+                    $formnames[] = $formname;
+                    foreach ($form['formtabs'] as $tab) {
+                        $tabs[$form['formname']][] = $tab;
+                    }
+                }
+
+                $controller->setPlaceholder('formnames', $formnames);
+
+                if (isset($record['MIGX_formname'])) {
+                    $formtabs = $tabs[$record['MIGX_formname']];
+                } else {
+                    //if no formname requested use the first form
+                    $formtabs = $tabs[$formnames[0]['value']];
+                }
+                $field = array();
+                $field['field'] = 'MIGX_formname';
+                $field['tv_id'] = 'Formname';
+                $allfields[] = $field;
+            }
+
+        }        
+        
 
         $fieldid = 0;
         $allfields[] = array();
         $categories = array();
         $xtypes = array();
 
+        
+
         $template = '@FILE fields.tpl';
-        $this->modx->controller = new revoChunkie($template, $corePath . 'templates/web/form/');
+        $this->modx->controller = new migxfeChunkie($template, $corePath . 'templates/web/form/');
 
         //needed because TVs are using smarty
         //$this->modx->getService('smarty', 'smarty.modSmarty');
         //$this->modx->controller = new MigxFormController($this->modx);
         //$this->modx->controller->loadTemplatesPath();
         $this->modx->controller->setPlaceholder('_config', $this->modx->config);
-        $this->modx->migxfe->createForm($tabs, $record, $allfields, $categories, $scriptProperties, $xtypes);
+        $this->modx->migxfe->createForm($formtabs, $record, $allfields, $categories, $scriptProperties, $xtypes);
 
         $formcaption = $this->modx->migxfe->customconfigs['formcaption'];
+        
 
         //collect custom TV-xtypes
         $xtypesoutput = '';
@@ -100,7 +183,7 @@ class migxFormProcessor extends modProcessor {
             foreach ($xtypes as $xtype) {
                 if (file_exists($xtype)) {
                     $template = '@FILE '.$xtype;
-                    $parser = new revoChunkie($template, '', false);
+                    $parser = new migxfeChunkie($template, '', false);
                     //print_r($parser->getPlaceholders());
                     $xtypesoutput .= $parser->render();
                 }
@@ -116,7 +199,7 @@ class migxFormProcessor extends modProcessor {
             foreach ($categories as $category) {
                 $i++;
                 $template = '@FILE tab.tpl';
-                $parser = new revoChunkie($template, $corePath . 'templates/web/form/');
+                $parser = new migxfeChunkie($template, $corePath . 'templates/web/form/');
                 $parser->createVars($category);
                 $parser->setPlaceholder('innerrows.input', implode(',', $category['inputs']));
                 $is_xtab = count($categories) < 2 || ($i == 1 && $category['print_before_tabs']) ? '0' : '1';
@@ -130,11 +213,17 @@ class migxFormProcessor extends modProcessor {
         $innerrows['tab'] = $tabsoutput;
         $innercounts['tab'] = count($categories);
 
+        $object_array = is_object($object) ? $object->toArray() : array();
+        
+        $formcaption = $this->modx->migxfe->renderChunk($formcaption, $record, false, false);
+        $formcaption = addslashes($formcaption);
+        $formcaption = str_replace(array("\n","\r"),array("\\n","\\r"),$formcaption); 
+
         $controller->setPlaceholder('xtypes', $xtypesoutput);
-        $controller->setPlaceholder('formcaption', $this->modx->migxfe->renderChunk($formcaption, $record, false));
+        $controller->setPlaceholder('formcaption',$formcaption);
         $controller->setPlaceholder('fields', $this->modx->toJSON($allfields));
         $controller->setPlaceholder('customconfigs', $this->modx->migxfe->customconfigs);
-        $controller->setPlaceholder('object', $object->toArray());
+        $controller->setPlaceholder('object', $object_array);
         $controller->setPlaceholder('innerrows', $innerrows);
         $controller->setPlaceholder('innercounts', $innercounts);
         $controller->setPlaceholder('request', $_REQUEST);
@@ -146,7 +235,7 @@ class migxFormProcessor extends modProcessor {
         $tabs_js = '';
         if (count($categories) > 1) {
             $template = '@FILE tabs_js.tpl';
-            $parser = new revoChunkie($template, $corePath . 'templates/web/form/');
+            $parser = new migxfeChunkie($template, $corePath . 'templates/web/form/');
             $parser->createVars($controller->getPlaceholders());
             $tabs_js = $parser->render();
         }

@@ -34,7 +34,7 @@ if (!empty($buttons)){
             $prop['object_id'] = $modx->getOption('object_id',$button,$modx->resource->get('id'));
             $prop['wctx'] = $modx->getOption('wctx',$button,$modx->resource->get('context_key'));
             $prop['field'] = $modx->getOption('field',$button,'');
-            $prop['action'] = $modx->getOption('action',$button,'web/fields');
+            $prop['action'] = $modx->getOption('action',$button,'web/migxdb/fields');
             $prop['processaction'] = $modx->getOption('processaction',$button,'');
             $prop['win_title'] = $modx->getOption('win_title',$button,'');//Todo: get it from configs
             $prop['handler'] = $modx->getOption('handler',$button,'this.onButtonClick');

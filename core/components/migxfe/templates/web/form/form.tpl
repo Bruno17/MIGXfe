@@ -5,9 +5,6 @@
 <input type="hidden" class="mulititems_grid_item_fields" name="mulititems_grid_item_fields" value="[[+fields]]" />
 <input type="hidden" class="tvmigxid" name="tvmigxid" value="[[+migxid]]" />
 
-<div id="modx-window-mi-grid-update-[[+win_id]]-tabs" >
-
-</div>
 [[+tabs_jsX]]
 
 [[+OnResourceTVFormRender]]
@@ -21,11 +18,11 @@
 //console.log(MigxFe.app.win);
 
 var win_panel = Ext.create('Ext.form.Panel', {
-    id: 'migxdb-panel-object-[[+request.btn_id]]',
-    title: '[[+formcaption]]',
+    id: 'migxdb-panel-object-[[+request.win_id]]',
+    title:'[[+formcaption]]',
     bodyPadding: 5,
     width: '100%',
-    url: 'save-form.php',    
+    //url: 'save-form.php',    
     items: [{
         xtype: 'hidden',
         name: 'mulititems_grid_item_fields',
@@ -40,15 +37,29 @@ var win_panel = Ext.create('Ext.form.Panel', {
         xtype:'tabpanel',
         width: '100%',
         height: 400,
-        id: 'modx-window-mi-grid-update-[[+request.btn_id]]-tabs',
+        id: 'modx-window-mi-grid-update-[[+request.win_id]]-tabs',
         items: [ [[+innerrows.tab]] ]            
     }]
 });
 
-//add form to window
+//add form and buttons to window
 var win = Ext.getCmp('[[+request.win_id]]');
 if (win){
    win.add(win_panel);
+   win.addButton({
+                    text: '[[%cancel]]',
+                    scope: win,
+                    handler: function() {
+                         this.close(); 
+                    }
+                });   
+   win.addButton({
+                    text: '[[%done]]',
+                    scope: win,
+                    handler: function() {
+                        this.form.submit();
+                    }
+                });
    win.form = win_panel;
    win.form.on({
        beforeaction: function(){
