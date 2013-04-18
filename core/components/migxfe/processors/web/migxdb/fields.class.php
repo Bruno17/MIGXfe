@@ -121,9 +121,13 @@ class migxFormProcessor extends modProcessor {
 
         $innerrows['tab'] = $tabsoutput;
         $innercounts['tab'] = count($categories);
+        
+        $formcaption = $this->modx->migxfe->renderChunk($formcaption, $record, false, false);
+        $formcaption = addslashes($formcaption);
+        $formcaption = str_replace(array("\n","\r"),array("\\n","\\r"),$formcaption);         
 
         $controller->setPlaceholder('xtypes', $xtypesoutput);
-        $controller->setPlaceholder('formcaption', $this->modx->migxfe->renderChunk($formcaption, $record, false));
+        $controller->setPlaceholder('formcaption', $formcaption);
         $controller->setPlaceholder('fields', $this->modx->toJSON($allfields));
         $controller->setPlaceholder('customconfigs', $this->modx->migxfe->customconfigs);
         $controller->setPlaceholder('object', $object->toArray());

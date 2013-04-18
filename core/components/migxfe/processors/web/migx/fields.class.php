@@ -65,6 +65,11 @@ class migxFormProcessor extends modProcessor {
             $properties = $tv->get('input_properties');
             //$properties = isset($properties['formtabs']) ? $properties : $tv->getProperties();
         }
+        else{
+            $tv = $this->modx->newObject('modTemplateVar');
+            $tv->set('type','migx');
+        }
+        
 
         $configs = !empty($this->modx->migxfe->config['configs']) ? $this->modx->migxfe->config['configs'] : '';
         $configs = isset($properties['configs']) && !empty($properties['configs']) ? $properties['configs'] : $configs;
@@ -219,6 +224,7 @@ class migxFormProcessor extends modProcessor {
         $formcaption = addslashes($formcaption);
         $formcaption = str_replace(array("\n","\r"),array("\\n","\\r"),$formcaption); 
 
+        $controller->setPlaceholder('tv', $tv->toArray());
         $controller->setPlaceholder('xtypes', $xtypesoutput);
         $controller->setPlaceholder('formcaption',$formcaption);
         $controller->setPlaceholder('fields', $this->modx->toJSON($allfields));

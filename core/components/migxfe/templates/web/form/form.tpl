@@ -63,10 +63,11 @@ if (win){
    win.form = win_panel;
    win.form.on({
        beforeaction: function(){
-           var v = win.form.getValues(); 
-           console.log(v);
+        
+           var v = this.getValues(); 
+           var tv_type = '[[+tv.type]]';
            var object_id = '[[+object.id]]';
-           if (win.form.isValid()) {
+           if (this.isValid()) {
                if (this.action == 'd'){
                    //MODx.fireResourceFormChange();
                    object_id = 'new';     
@@ -76,7 +77,7 @@ if (win){
                }else{
                    /*append record*/
                }
-
+               
                var fields = Ext.JSON.decode(v['mulititems_grid_item_fields']);
                var item = {};
                var tvid = '';
@@ -84,16 +85,17 @@ if (win){
                    for (var i = 0; i < fields.length; i++) {
                        tvid = (fields[i].tv_id);
                        if (v['tv'+tvid+'_prefix']) v['tv'+tvid]=v['tv'+tvid+'_prefix']+v['tv'+tvid];//url-TV support
-                       item[fields[i].field]=v['tv'+tvid+'[]'] || v['tv'+tvid] || '';							
+                       if (typeof(fields[i].field) != 'undefined'){
+                           item[fields[i].field]=v['tv'+tvid+'[]'] || v['tv'+tvid] || '';
+                       }
+                       							
                    }
                    //we store the item.values to rec.json because perhaps sometimes we can have different fields for each record
                }					
 			
                //console.log(item);
-            
-               Ext.Ajax.request({
-                   url: '[[+migxfeconfig.migxConnectorUrl]]'
-                   ,params: {
+               
+               var params = {
                        HTTP_MODAUTH: '[[+request.HTTP_MODAUTH]]'
                        ,action: 'mgr/migxdb/update'
                        ,data: Ext.JSON.encode(item)
@@ -103,10 +105,27 @@ if (win){
                        ,object_id: object_id
                        //,tv_id: this.baseParams.tv_id
                        ,wctx: '[[+request.wctx]]'
+                   };
+               if (tv_type == 'migx'){
+                   var grid = Ext.getCmp('[[+request.grid_id]]');
+                   var field = grid.getHiddenField();
+                   params.items = field.getValue();
+                   params.index = grid.menu.recordIndex;
+                   params.action = 'mgr/migx/migxupdate'
+               }    
+               
+               Ext.Ajax.request({
+                   url: '[[+migxfeconfig.migxConnectorUrl]]'
+                   ,params: params
+                   ,success: function(r){
+                       var r = Ext.decode(r.responseText);
+                       if (r.success){
+                           if (tv_type == 'migx'){
+                               grid.updateData(r);
+                           }                        
+                       }
                    }
-                   ,listeners: {
-                       'success': {fn:this.onSubmitSuccess,scope:this}
-                   }
+                   
                });
         
            }           

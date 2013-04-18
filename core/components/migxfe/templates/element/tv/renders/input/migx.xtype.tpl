@@ -33,7 +33,6 @@ Ext.define('MigxFe.input.migxgridpanel' ,{
         
     }
 	,loadData: function(){
-	   console.log(this);
         var field = Ext.get(this.valuename);
         if (field){
            var items_string = field.getValue(); 
@@ -67,7 +66,31 @@ Ext.define('MigxFe.input.migxgridpanel' ,{
 		this.getStore().sortInfo = null;
 		this.getStore().loadData(items);
 			
-    },getMenu: function() {
+    }
+	,updateData: function(response){
+        
+        
+        items = response.object;
+        this.getHiddenField().setValue(Ext.encode(items));         
+        this.autoinc = 0;
+        for(i = 0; i <  items.length; i++) {
+ 		    item = items[i];
+            if (item.MIGX_id){
+                if (parseInt(item.MIGX_id)  > this.autoinc){
+                    this.autoinc = item.MIGX_id;
+                }
+            }else{
+                item.MIGX_id = this.autoinc +1 ;
+                this.autoinc = item.MIGX_id;                 
+            }	
+           items[i] = item;  
+        } 
+        
+		this.getStore().sortInfo = null;
+		this.getStore().loadData(items);
+			
+    }    
+    ,getMenu: function() {
 		var n = this.menu.record; 
         var m = [];
         m.push({
@@ -126,7 +149,8 @@ Ext.define('MigxFe.input.migxgridpanel' ,{
           action: 'web/migx/fields',
           configs: '',
           tv_name: this.tv_name,
-          record_json: json 
+          record_json: json,
+          grid_id: this.getId()
       
       };
       
