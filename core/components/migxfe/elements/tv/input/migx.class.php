@@ -114,6 +114,7 @@ class modTemplateVarInputRenderMigx extends modTemplateVarInputRenderMigxFe {
         $rows = $this->migx->checkRenderOptions($this->modx->fromJson($tv_value));
         $tv_value = $this->modx->toJson($rows);
         
+        $this->setPlaceholder('uniqueID', $this->modx->getOption('win_id', $_REQUEST, ''));
         $this->setPlaceholder('tv_type', 'migx');
         $this->setPlaceholder('tv_value', $tv_value);
         $this->setPlaceholder('i18n', $lang);
@@ -122,11 +123,18 @@ class modTemplateVarInputRenderMigx extends modTemplateVarInputRenderMigxFe {
         $this->setPlaceholder('connected_object_id', $this->modx->getOption('object_id', $_REQUEST, ''));
         $this->setPlaceholder('base_url', $this->modx->getOption('base_url'));
         $this->setPlaceholder('myctx', $wctx);
-        $grid = 'migx';
-        echo $gridfile = $this->migx->config['templatesPath'] . 'web/grids/' . $grid . '.grid.tpl';
+        //$grid = 'migx';
+        //echo $gridfile = $this->migx->config['templatesPath'] . 'web/grids/' . $grid . '.grid.tpl';
         //$this->setPlaceholder('grid', $this->migx->replaceLang($this->modx->controller->fetchTemplate($gridfile)));
 
     }
+    
+    public function getExtraScripts() {
+        $grid = 'migx';
+        $gridfile = $this->migx->config['templatesPath'] . 'web/grids/' . $grid . '.grid.tpl';
+        return array($gridfile);
+    }        
+    
     public function getTemplate() {
         return 'element/tv/renders/input/migx.tpl';
     }

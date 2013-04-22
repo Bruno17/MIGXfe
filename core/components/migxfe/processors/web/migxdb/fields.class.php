@@ -86,18 +86,8 @@ class migxFormProcessor extends modProcessor {
 
         $formcaption = $this->modx->migxfe->customconfigs['formcaption'];
 
-        //collect custom TV-xtypes
-        $xtypesoutput = '';
-        if (is_array($xtypes)) {
-            foreach ($xtypes as $xtype) {
-                if (file_exists($xtype)) {
-                    $template = '@FILE '.$xtype;
-                    $parser = new migxfeChunkie($template, '', false);
-                    //print_r($parser->getPlaceholders());
-                    $xtypesoutput .= $parser->render();
-                }
-            }
-        }
+        //collected custom TV-xtypes
+        $xtypesoutput = implode('',$xtypes);
 
         //$innerrows['tab']='Test';<- parse categories to tabs here
         //{if count($categories) < 2 OR ($smarty.foreach.cat.first AND $category.print_before_tabs)}

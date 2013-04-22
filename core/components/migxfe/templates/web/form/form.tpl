@@ -21,8 +21,8 @@ var win_panel = Ext.create('Ext.form.Panel', {
     id: 'migxdb-panel-object-[[+request.win_id]]',
     title:'[[+formcaption]]',
     bodyPadding: 5,
-    width: '100%',
-    //url: 'save-form.php',    
+    layout: 'anchor',
+    anchor: '100% 100%',
     items: [{
         xtype: 'hidden',
         name: 'mulititems_grid_item_fields',
@@ -35,8 +35,9 @@ var win_panel = Ext.create('Ext.form.Panel', {
         margin: '0'
     },{
         xtype:'tabpanel',
-        width: '100%',
-        height: 400,
+        layout: 'anchor',
+        //width: '100%',
+        anchor: '100% 100%',
         id: 'modx-window-mi-grid-update-[[+request.win_id]]-tabs',
         items: [ [[+innerrows.tab]] ]            
     }]
@@ -63,7 +64,7 @@ if (win){
    win.form = win_panel;
    win.form.on({
        beforeaction: function(){
-        
+           var win = Ext.getCmp('[[+request.win_id]]');
            var v = this.getValues(); 
            var tv_type = '[[+tv.type]]';
            var object_id = '[[+object.id]]';
@@ -110,8 +111,9 @@ if (win){
                    var grid = Ext.getCmp('[[+request.grid_id]]');
                    var field = grid.getHiddenField();
                    params.items = field.getValue();
-                   params.index = grid.menu.recordIndex;
-                   params.action = 'mgr/migx/migxupdate'
+                   params.index = '[[+request.index]]';
+                   params.action = 'mgr/migx/migxupdate';
+                   params.isnew = '[[+request.isnew]]';
                }    
                
                Ext.Ajax.request({
@@ -122,7 +124,8 @@ if (win){
                        if (r.success){
                            if (tv_type == 'migx'){
                                grid.updateData(r);
-                           }                        
+                           }
+                           win.close();                        
                        }
                    }
                    

@@ -195,7 +195,7 @@ if (!class_exists('migxfeChunkie')) {
                 }
                 if (!array_key_exists($filename, $modx->chunkieCache['@FILE'])) {
                     if (file_exists($this->basepath . $filename)) {
-                        $template = file_get_contents($this->basepath . $filename);
+                       $template = file_get_contents($this->basepath . $filename);
                     }
                     $modx->chunkieCache['@FILE'][$filename] = $template;
                 } else {
@@ -222,7 +222,7 @@ if (!class_exists('migxfeChunkie')) {
                 }
                 $template = $modx->chunkieCache['@CHUNK'][$chunkname];
             }
-
+            
             return $template;
         }
 

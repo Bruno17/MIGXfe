@@ -239,12 +239,12 @@ class MigxFe {
             //$configs = array_merge( array ('master'), $configs);
 
             if ($grid) {
-                $configFile = $this->config['corePath'] . 'configs/grid/grid.config.inc.php'; // [ file ]
+                $configFile = $this->config['migxCorePath'] . 'configs/grid/grid.config.inc.php'; // [ file ]
                 if (file_exists($configFile)) {
                     include ($configFile);
                 }
                 //custom collection of grid-functions...... - deprecated
-                $configFile = $this->config['corePath'] . 'configs/grid/grid.custom.config.inc.php'; // [ file ]
+                $configFile = $this->config['migxCorePath'] . 'configs/grid/grid.custom.config.inc.php'; // [ file ]
                 if (file_exists($configFile)) {
                     include ($configFile);
                 }
@@ -267,7 +267,7 @@ class MigxFe {
             if ($preloadGridConfigs && is_Object($this->configsObject)) {
 
                 $config = $this->configsObject->get('name');
-                $configFile = $this->config['corePath'] . 'configs/grid/grid.' . $config . '.config.inc.php'; // [ file ]
+                $configFile = $this->config['migxCorePath'] . 'configs/grid/grid.' . $config . '.config.inc.php'; // [ file ]
                 if (file_exists($configFile)) {
                     include ($configFile);
                 }
@@ -297,7 +297,7 @@ class MigxFe {
 
                 if ($grid) {
                     //first try to find custom-grid-configurations (buttons,context-menus,functions)
-                    $configFile = $this->config['corePath'] . 'configs/grid/grid.' . $config . '.config.inc.php'; // [ file ]
+                    $configFile = $this->config['migxCorePath'] . 'configs/grid/grid.' . $config . '.config.inc.php'; // [ file ]
                     if (file_exists($configFile)) {
                         include ($configFile);
                     }
@@ -369,7 +369,7 @@ class MigxFe {
                         }
                     }
                     //third add configs from file, if exists
-                    $configFile = $this->config['corePath'] . 'configs/' . $config . '.config.inc.php'; // [ file ]
+                    $configFile = $this->config['migxCorePath'] . 'configs/' . $config . '.config.inc.php'; // [ file ]
                     if (file_exists($configFile)) {
                         include ($configFile);
                     }
@@ -824,6 +824,7 @@ class MigxFe {
 
             }
         }
+        
         $gf = '';
         if (count($handlers) > 0) {
             $gridfunctions = array();
@@ -841,8 +842,8 @@ class MigxFe {
                 $gf = ',' . str_replace($search, $replace, implode(',', $gridfunctions));
             }
         }
+ 
         $this->customconfigs['gridfunctions'] = $gf;
-
 
         $newitem[] = $item;
 
@@ -861,7 +862,7 @@ class MigxFe {
         $controller->setPlaceholder('reqTempParams', $this->modx->getOption('tempParams', $_REQUEST, ''));
         $controller->setPlaceholder('connected_object_id', $this->modx->getOption('object_id', $_REQUEST, ''));
         $controller->setPlaceholder('pathconfigs', $this->modx->toJSON($pathconfigs));
-        
+
         $controller->setPlaceholder('fields', $this->modx->toJSON($fields));
         $controller->setPlaceholder('newitem', $this->modx->toJSON($newitem));
         $controller->setPlaceholder('base_url', $this->modx->getOption('base_url'));
@@ -871,7 +872,7 @@ class MigxFe {
         $controller->setPlaceholder('win_id', !empty($this->customconfigs['win_id']) ? $this->customconfigs['win_id'] : $win_id);
         $controller->setPlaceholder('update_win_title', !empty($this->customconfigs['update_win_title']) ? $this->customconfigs['update_win_title'] : 'MIGXfe');
         //print_r($controller->controller->getPlaceholders());
- 
+
 
     }
 
@@ -1033,7 +1034,7 @@ class MigxFe {
             $tvs = array();
             $inputs = array();
             $fields = is_array($tab['fields']) ? $tab['fields'] : $this->modx->fromJson($tab['fields']);
-            
+
             if (is_array($fields) && count($fields) > 0) {
 
                 foreach ($fields as &$field) {
@@ -1166,19 +1167,28 @@ class MigxFe {
                         $this->modx->getParser();
                         /*parse all non-cacheable tags and remove unprocessed tags, if you want to parse only cacheable tags set param 3 as false*/
                         $this->modx->parser->processElementTags('', $inputForm, true, true, '[[', ']]', array(), $counts);
-                        echo '<input type="hidden" id="original'.$_REQUEST['win_id'].'-'.$tv->get('id').'" name="original'.$tv->get('id').'" value="' . htmlspecialchars($tv->get('value'), ENT_QUOTES) . '" />';
-                        
+                        echo '<input type="hidden" id="original' . $_REQUEST['win_id'] . '-' . $tv->get('id') . '" name="original' . $tv->get('id') . '" value="' . htmlspecialchars($tv->get('value'), ENT_QUOTES) . '" />';
 
-                        $xtypes[$tv->get('xtype_template')] = $tv->get('xtype_template');
+
+                        if (is_array($xtypes)) {
+                                $xtype = $tv->get('xtype_template');
+                                if (file_exists($xtype)) {
+                                    $template = '@FILE ' . $xtype;
+                                    $parser = new migxfeChunkie($template, '', false);
+                                    //print_r($parser->getPlaceholders());
+                                    $xtypes[$tv->get('xtype_template')] = $parser->render();
+                                }
+                            
+                        }
 
                         if (empty($inputForm))
                             continue;
-                        
+
                         $tv->set('formElement', $inputForm);
                         $inputs[] = $inputForm;
                     }
 
-                    
+
                     $tvs[] = $tv->toArray();
                 }
             }
@@ -1223,7 +1233,7 @@ class MigxFe {
 
         if ($className = $tv->checkForRegisteredRenderMethod($type, $method)) {
             /**
-             @var modTemplateVarOutputRender $render */
+             *  * @var modTemplateVarOutputRender $render */
 
             $render = new $className($tv);
             $output = $render->render($value, $params);
@@ -1240,7 +1250,7 @@ class MigxFe {
                     $this->registerRenderMethod($type, $method, $className);
                     if (class_exists($className)) {
                         /**
-                         @var modTemplateVarOutputRender $render */
+                         *  * @var modTemplateVarOutputRender $render */
                         $render = new $className($tv);
                     }
                     break;

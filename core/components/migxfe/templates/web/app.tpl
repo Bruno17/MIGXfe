@@ -1,7 +1,28 @@
+/*
+a fix in Ext JS 4.2.1 that adds the x-border-box class to top level components instead of the html tag.
+see: http://www.sencha.com/forum/showthread.php?260608-New-theme-CSS-breaks-other-CSS-on-the-page
+*/
+
+Ext.define('Ext.BorderBoxFix', {
+    override: 'Ext.AbstractComponent',
+    initStyles: function(targetEl) {
+        this.callParent(arguments);
+        if (Ext.isBorderBox && !this.ownerCt) {
+            targetEl.addCls(Ext.baseCSSPrefix + 'border-box');
+        }
+    }
+});
+
+
+Ext.onReady(function() {
+    Ext.fly(document.documentElement).removeCls(Ext.baseCSSPrefix + 'border-box');
+});
+
+
 Ext.define('MigxFe.updatewindow' ,{
     extend: 'Ext.Window',
     alias: 'widget.migxUpdatewindow',
-
+    autoScroll: true,
     initComponent: function() {
         this.getLoader().baseParams.win_id = this.getId();
         this.callParent(arguments);
@@ -13,6 +34,30 @@ Ext.define('MigxFe.updatewindow' ,{
         toolbar.add(button);
     }
     
+    
+});
+
+Ext.define('MigxFe.combo.Browser' ,{
+    extend: 'Ext.form.TriggerField',
+    alias: 'widget.migx-combo-browser',
+    triggerAction: 'all',
+    dialog: null,
+    onTriggerClick : function(btn){
+        if (this.disabled){
+            return false;
+        }
+        dialog = MigxFe.app.openBrowser(this);
+        if (dialog){
+            this.dialog = dialog;
+        }
+    },    
+    initComponent: function() {
+        var field = Ext.get(this.valuename);
+        this.callParent(arguments);
+        if (field){
+            this.setValue(field.getValue());
+        }    
+    }
     
 });
 
@@ -60,6 +105,7 @@ Ext.application({
                      titleAlign: 'center'
                 },
                 closable: true,
+                modal: true,
                 maximizable: true,
                 closeAction: 'destroy',
                 width: 600,
@@ -86,4 +132,41 @@ Ext.application({
                 
             });        
     }
+
+    ,openBrowser: function(field){
+            if (typeof(field.dialog) == 'function' ){
+                field.dialog('destroy');
+            }
+            dialog = $('#elfinder').dialogelfinder({
+                url: 'assets/components/migxfe/connector.php',
+                modal: true,
+                customData : {
+                    'HTTP_MODAUTH': '[[+auth]]',
+                    'action':'web/browser/elfinderconnector'
+                        
+                },                
+                commandsOptions: {
+                    getfile: {
+                        oncomplete: 'destroy'
+                        //,multiple : true
+                    }
+                }
+                ,getFileCallback: function(file) {
+                    field.setValue(file.path);
+                    //select_elfinder_files(files)
+                    //fileCopier(files);
+                }
+                ,handlers : {
+                    /*
+                    select : function(event, elfinderInstance) {
+                        selected_files = event.data.selected;
+                    }
+                    */
+                }
+            });
+            console.log(dialog);
+            dialog.dialogelfinder('open');
+            return dialog;
+    }         
+    
 });

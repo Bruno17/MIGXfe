@@ -1,4 +1,5 @@
 <?php
+
 /**
  * An abstract class meant to be used by TV renders. Do not extend this class directly; use its Input or Output
  * derivatives instead.
@@ -6,26 +7,29 @@
  * @package modx
  */
 abstract class modTemplateVarRenderMigxFe {
-    /** @var modTemplateVar $tv */
+    /**
+     @var modTemplateVar $tv */
     public $tv;
-    /** @var modX $modx */
+    /**
+     @var modX $modx */
     public $modx;
-    /** @var array $config */
+    /**
+     @var array $config */
     public $config = array();
 
-    function __construct(modTemplateVar $tv,array $config = array()) {
-        
-        $corePath = dirname(dirname(dirname(__file__))).'/'; 
-        $this->tv =& $tv;
-        $this->modx =& $tv->xpdo;
-        $this->config = array_merge($this->config,$config);
+    function __construct(modTemplateVar $tv, array $config = array()) {
+
+        $corePath = dirname(dirname(dirname(__file__))) . '/';
+        $this->tv = &$tv;
+        $this->modx = &$tv->xpdo;
+        $this->config = array_merge($this->config, $config);
         $template = $this->getTemplate();
-        
-        $xtype_template = str_replace('.tpl','.xtype.tpl',$template);
-        $this->tv->set('xtype_template',$corePath.'templates/'.$xtype_template);
-        $this->controller = new migxfeChunkie('@FILE ' . $template,$corePath.'templates/');
+
+        $xtype_template = str_replace('.tpl', '.xtype.tpl', $template);
+        $this->tv->set('xtype_template', $corePath . 'templates/' . $xtype_template);
+        $this->controller = new migxfeChunkie('@FILE ' . $template, $corePath . 'templates/');
         $this->setReplaceonlyfields('tv.value');
-        
+
     }
 
     /**
@@ -43,9 +47,9 @@ abstract class modTemplateVarRenderMigxFe {
      * @param array $params
      * @return mixed|void
      */
-    public function render($value,array $params = array()) {
+    public function render($value, array $params = array()) {
         $this->_loadLexiconTopics();
-        return $this->process($value,$params);
+        return $this->process($value, $params);
     }
 
     /**
@@ -59,7 +63,7 @@ abstract class modTemplateVarRenderMigxFe {
             }
         }
     }
-    
+
     /**
      * Set some placeholders as not to be processed
      * @param string $k
@@ -68,14 +72,14 @@ abstract class modTemplateVarRenderMigxFe {
     public function setReplaceonlyfields($f = '') {
 
         $this->controller->setReplaceonlyfields($f);
-    }    
+    }
 
     /**
      * @param string $value
      * @param array $params
      * @return void|mixed
      */
-    public function process($value,array $params = array()) {
+    public function process($value, array $params = array()) {
         return $value;
     }
 }
@@ -84,17 +88,31 @@ abstract class modTemplateVarRenderMigxFe {
  * @package modx
  */
 abstract class modTemplateVarInputRenderMigxFe extends modTemplateVarRenderMigxFe {
-    public function render($value,array $params = array()) {
-        
-        $this->setPlaceholder('tv',$this->tv->toArray());
-        $this->setPlaceholder('id',$this->tv->get('id'));
-        $this->setPlaceholder('ctx',isset($_REQUEST['ctx']) ? $_REQUEST['ctx'] : 'web');
-        $this->setPlaceholder('params',$params);
+    public function render($value, array $params = array()) {
+
+        $this->setPlaceholder('tv', $this->tv->toArray());
+        $this->setPlaceholder('id', $this->tv->get('id'));
+        $this->setPlaceholder('ctx', isset($_REQUEST['ctx']) ? $_REQUEST['ctx'] : 'web');
+        $this->setPlaceholder('params', $params);
         $this->setPlaceholder('request', $_REQUEST);
 
-        $output = parent::render($value,$params);
-        
+        $output = parent::render($value, $params);
+
         $tpl = $this->controller->render();
+
+        $extraScripts = $this->getExtraScripts();
+        if (count($extraScripts) > 0) {
+            foreach ($extraScripts as $script) {
+                if (file_exists($script)) {
+                    $template = '@FILE ' . $script;
+                    $this->controller->setBasepath('');
+                    $template = $this->controller->getTemplate($template);
+                    $this->controller->setTemplate($template);                    
+                    echo $this->controller->render();
+                }
+            }
+        }
+
         return !empty($tpl) ? $tpl : $output;
     }
 
@@ -104,8 +122,8 @@ abstract class modTemplateVarInputRenderMigxFe extends modTemplateVarRenderMigxF
      * @param string $k
      * @param mixed $v
      */
-    public function setPlaceholder($k,$v) {
-        $this->controller->setPlaceholder($k,$v);
+    public function setPlaceholder($k, $v) {
+        $this->controller->setPlaceholder($k, $v);
     }
 
     /**
@@ -117,10 +135,18 @@ abstract class modTemplateVarInputRenderMigxFe extends modTemplateVarRenderMigxF
     }
 
     /**
+     * Return additional scripts for the TV
+     * @return array
+     */
+    public function getExtraScripts() {
+        return array();
+    }
+
+    /**
      * Return the input options parsed for the TV
      * @return mixed
      */
     public function getInputOptions() {
-        return $this->tv->parseInputOptions($this->tv->processBindings($this->tv->get('elements'),$this->modx->resource->get('id')));
+        return $this->tv->parseInputOptions($this->tv->processBindings($this->tv->get('elements'), $this->modx->resource->get('id')));
     }
 }

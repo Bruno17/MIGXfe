@@ -16,14 +16,15 @@
         }
     }),
     */
-    columns: Ext.decode('[[+columns]]')
-    ,
+    columns_config: '[[+columns]]',
+    tbar: [],  
     viewConfig: {
         plugins: {
             ptype: 'gridviewdragdrop',
             dragText: 'Drag and drop to reorganize'
             
         },
+        
         listeners: {
             "drop": {
                 //scope: this,
@@ -32,6 +33,7 @@
                     grid.collectItems();
                    }
                 },
+              
             itemcontextmenu: function(view, rec, node, index, event) {
                 event.stopEvent(); // stops the default event. i.e. Windows Context Menu
                 var grid = this.panel;
@@ -49,6 +51,8 @@
     },
     //height: 200,
     width: '100%',
+    collapsible: true,
+    title: '[[+tv.caption]]',
     hiddenFieldName: 'tv[[+tv.id]]', 
     valuename:'original[[+request.win_id]]-[[+tv.id]]',
     win_id:'[[+request.win_id]]',
