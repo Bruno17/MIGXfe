@@ -22,7 +22,7 @@ Ext.onReady(function() {
 Ext.define('MigxFe.updatewindow' ,{
     extend: 'Ext.Window',
     alias: 'widget.migxUpdatewindow',
-    autoScroll: true,
+    
     initComponent: function() {
         this.getLoader().baseParams.win_id = this.getId();
         this.callParent(arguments);
@@ -85,7 +85,7 @@ Ext.application({
         }
         
         if (!win){
-            win=_this.createWin(params,config);
+            win=_this.createWin(params,config,button);
             this.win = win;
         }
         button.dom.disabled = true;
@@ -97,8 +97,16 @@ Ext.application({
             });
         }        
     },
-    createWin: function(params,config){
-            return Ext.create('widget.migxUpdatewindow', {
+    createWin: function(params,config,el){
+            var el = el;
+            if (typeof(el) != 'undefined'){
+                win_x = el.win_x || false;
+                win_y = el.win_y || false;
+                win_width = el.win_width || false;
+                win_height = el.win_height || false;
+            }
+           
+            var win = Ext.create('widget.migxUpdatewindow', {
                 //id: data.win_id,
                 title: config.win_title || '',
                 header: {
@@ -108,9 +116,9 @@ Ext.application({
                 modal: true,
                 maximizable: true,
                 closeAction: 'destroy',
-                width: 600,
+                width: win_width || 1000,
                 minWidth: 350,
-                height: 350,
+                height: win_height || 600,
                 tools: [],
                 layout: 'anchor',
                 buttons: [],               
@@ -126,11 +134,29 @@ Ext.application({
                 },
                 listeners:{
                     close:{
-                        fn: function(){console.log(this);}
+                        fn: function(){
+                            if (typeof(el) != 'undefined'){
+                                el.win_x = this.x;
+                                el.win_y = this.y;
+                                el.win_width = this.width;
+                                el.win_height = this.height;
+                            }    
+                        }
                     }
                 }
                 
-            });        
+            }); 
+            if (typeof(el) != 'undefined'){
+                if (el.win_x){
+                    win.x = el.win_x;
+                }
+                if (el.win_y){
+                    win.y = el.win_y;
+                }
+            }            
+            return win;
+            
+                   
     }
 
     ,openBrowser: function(field){

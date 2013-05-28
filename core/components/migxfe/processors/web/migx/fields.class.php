@@ -213,6 +213,11 @@ class migxFormProcessor extends modProcessor {
         $formcaption = $this->modx->migxfe->renderChunk($formcaption, $record, false, false);
         $formcaption = addslashes($formcaption);
         $formcaption = str_replace(array("\n","\r"),array("\\n","\\r"),$formcaption); 
+        
+        $template = '@FILE winbuttons.tpl';
+        $parser = new migxfeChunkie($template, $corePath . 'templates/web/form/');
+        $parser->createVars($controller->getPlaceholders());
+        $winbuttons = $parser->render();        
 
         //$controller->setPlaceholder('uniqueID', $this->modx->getOption('win_id', $_REQUEST, ''));
         $controller->setPlaceholder('tv', $tv->toArray());
@@ -225,10 +230,16 @@ class migxFormProcessor extends modProcessor {
         $controller->setPlaceholder('innercounts', $innercounts);
         $controller->setPlaceholder('request', $_REQUEST);
         $controller->setPlaceholder('migxfeconfig', $this->modx->migxfe->config);
+        $controller->setPlaceholder('OnMigxfeFormPrerender', '');
+        $controller->setPlaceholder('OnMigxfeFormRender', '');
+   
 
         //$controller->setPlaceholder('win_id', $scriptProperties['tv_id']);
         $controller->setPlaceholder('win_id', isset($this->modx->migxfe->customconfigs['win_id']) ? $this->modx->migxfe->customconfigs['win_id'] : $scriptProperties['tv_id']);
         //$c->setPlaceholder('id_update_window', 'modx-window-midb-grid-update');
+        $controller->setPlaceholder('onsubmitsuccess', $this->modx->getOption('onsubmitsuccess', $this->modx->migxfe->customconfigs, ''));
+        $controller->setPlaceholder('winbuttons', $this->modx->getOption('winbuttons', $this->modx->migxfe->customconfigs, $winbuttons));
+        $controller->setPlaceholder('submitparams', $this->modx->getOption('submitparams', $this->modx->migxfe->customconfigs, ''));        
         $tabs_js = '';
         if (count($categories) > 1) {
             $template = '@FILE tabs_js.tpl';

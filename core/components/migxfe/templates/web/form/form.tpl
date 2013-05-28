@@ -1,16 +1,5 @@
-[[+OnResourceTVFormPrerender]]
+[[+OnMigxfeFormPrerender]]
 [[+xtypes]]
-<h2>[[+formcaption]]</h2>
-
-<input type="hidden" class="mulititems_grid_item_fields" name="mulititems_grid_item_fields" value="[[+fields]]" />
-<input type="hidden" class="tvmigxid" name="tvmigxid" value="[[+migxid]]" />
-
-[[+tabs_jsX]]
-
-[[+OnResourceTVFormRender]]
-
-<br class="clear" />
-
 
 <script type="text/javascript">
 // <![CDATA[
@@ -21,8 +10,8 @@ var win_panel = Ext.create('Ext.form.Panel', {
     id: 'migxdb-panel-object-[[+request.win_id]]',
     title:'[[+formcaption]]',
     bodyPadding: 5,
-    layout: 'anchor',
     anchor: '100% 100%',
+    autoScroll: true,
     items: [{
         xtype: 'hidden',
         name: 'mulititems_grid_item_fields',
@@ -35,9 +24,8 @@ var win_panel = Ext.create('Ext.form.Panel', {
         margin: '0'
     },{
         xtype:'tabpanel',
+        anchor: '100%',
         layout: 'anchor',
-        //width: '100%',
-        anchor: '100% 100%',
         id: 'modx-window-mi-grid-update-[[+request.win_id]]-tabs',
         items: [ [[+innerrows.tab]] ]            
     }]
@@ -47,20 +35,7 @@ var win_panel = Ext.create('Ext.form.Panel', {
 var win = Ext.getCmp('[[+request.win_id]]');
 if (win){
    win.add(win_panel);
-   win.addButton({
-                    text: '[[%cancel]]',
-                    scope: win,
-                    handler: function() {
-                         this.close(); 
-                    }
-                });   
-   win.addButton({
-                    text: '[[%done]]',
-                    scope: win,
-                    handler: function() {
-                        this.form.submit();
-                    }
-                });
+   [[+winbuttons]]
    win.form = win_panel;
    win.form.on({
        beforeaction: function(){
@@ -114,18 +89,30 @@ if (win){
                    params.index = '[[+request.index]]';
                    params.action = 'mgr/migx/migxupdate';
                    params.isnew = '[[+request.isnew]]';
-               }    
-               
+               } 
+               /*
+               params.action = 'mgr/migxdb/process';
+               params.processaction = 'specialprocess';
+               */   
+               [[+submitparams]]
                Ext.Ajax.request({
                    url: '[[+migxfeconfig.migxConnectorUrl]]'
                    ,params: params
                    ,success: function(r){
                        var r = Ext.decode(r.responseText);
                        if (r.success){
+                           [[+onsubmitsuccess]] 
                            if (tv_type == 'migx'){
                                grid.updateData(r);
                            }
                            win.close();                        
+                       }else{
+                           Ext.MessageBox.show({
+                           title: 'Submit Error',
+                           msg: r.message || 'Submit Error',
+                           buttons: Ext.MessageBox.OK,
+                           icon: Ext.MessageBox.ERROR
+                           });                            
                        }
                    }
                    
@@ -140,3 +127,5 @@ if (win){
 
 // ]]>
 </script>
+
+[[+OnMigxfeFormRender]]

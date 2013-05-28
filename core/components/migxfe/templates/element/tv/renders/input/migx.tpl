@@ -22,7 +22,6 @@
         plugins: {
             ptype: 'gridviewdragdrop',
             dragText: 'Drag and drop to reorganize'
-            
         },
         
         listeners: {
@@ -49,8 +48,7 @@
             }                   
         }
     },
-    //height: 200,
-    width: '100%',
+    anchor: '100%',
     collapsible: true,
     title: '[[+tv.caption]]',
     hiddenFieldName: 'tv[[+tv.id]]', 
