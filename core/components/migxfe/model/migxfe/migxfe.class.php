@@ -824,7 +824,7 @@ class MigxFe {
 
             }
         }
-        
+
         $gf = '';
         if (count($handlers) > 0) {
             $gridfunctions = array();
@@ -842,7 +842,7 @@ class MigxFe {
                 $gf = ',' . str_replace($search, $replace, implode(',', $gridfunctions));
             }
         }
- 
+
         $this->customconfigs['gridfunctions'] = $gf;
 
         $newitem[] = $item;
@@ -1050,7 +1050,7 @@ class MigxFe {
                         $tv->set('id', $field['tv_id']);
                     } else {
 
-
+                        $params = array();
                         if (isset($field['inputTV']) && $tv = $this->modx->getObject('modTemplateVar', array('name' => $field['inputTV']))) {
                             $params = $tv->get('input_properties');
                         } else {
@@ -1064,7 +1064,12 @@ class MigxFe {
                             $tv->set('default_text', $tv->processBindings($field['default']));
                         }
                         if (!empty($field['configs'])) {
-                            $params['configs'] = $field['configs'];
+                            $cfg = $this->modx->fromJson($field['configs']);
+                            if (is_array($cfg)) {
+                                $params = array_merge($params, $cfg);
+                            } else {
+                                $params['configs'] = $field['configs'];
+                            }
                         }
 
                         /*insert actual value from requested record, convert arrays to ||-delimeted string */
@@ -1171,14 +1176,14 @@ class MigxFe {
 
 
                         if (is_array($xtypes)) {
-                                $xtype = $tv->get('xtype_template');
-                                if (file_exists($xtype)) {
-                                    $template = '@FILE ' . $xtype;
-                                    $parser = new migxfeChunkie($template, '', false);
-                                    //print_r($parser->getPlaceholders());
-                                    $xtypes[$tv->get('xtype_template')] = $parser->render();
-                                }
-                            
+                            $xtype = $tv->get('xtype_template');
+                            if (file_exists($xtype)) {
+                                $template = '@FILE ' . $xtype;
+                                $parser = new migxfeChunkie($template, '', false);
+                                //print_r($parser->getPlaceholders());
+                                $xtypes[$tv->get('xtype_template')] = $parser->render();
+                            }
+
                         }
 
                         if (empty($inputForm))
@@ -1233,7 +1238,7 @@ class MigxFe {
 
         if ($className = $tv->checkForRegisteredRenderMethod($type, $method)) {
             /**
-             *  * @var modTemplateVarOutputRender $render */
+             *  *  *  * @var modTemplateVarOutputRender $render */
 
             $render = new $className($tv);
             $output = $render->render($value, $params);
@@ -1250,7 +1255,7 @@ class MigxFe {
                     $this->registerRenderMethod($type, $method, $className);
                     if (class_exists($className)) {
                         /**
-                         *  * @var modTemplateVarOutputRender $render */
+                         *  *  *  * @var modTemplateVarOutputRender $render */
                         $render = new $className($tv);
                     }
                     break;

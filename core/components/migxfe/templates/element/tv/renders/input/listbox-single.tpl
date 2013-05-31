@@ -15,7 +15,7 @@
             ,editable: false
             ,typeAhead: false        
         `]]
-        [[+params.listEmptyText:isnot=``:then=`,listEmptyText:[[+params.listEmptyText]]`:else=``]]
+        [[+params.listEmptyText:isnot=``:then=`,listEmptyText:'[[+params.listEmptyText]]'`:else=``]]
         ,forceSelection: '[[+params.forceSelection:is=`1`:then=`true`:else=`false`]]'
         ,msgTarget: 'under'
         ,fieldLabel:'[[+tv.caption]]'

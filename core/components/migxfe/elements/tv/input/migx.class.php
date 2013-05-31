@@ -11,7 +11,6 @@
 class modTemplateVarInputRenderMigx extends modTemplateVarInputRenderMigxFe {
     public function process($value, array $params = array()) {
 
-
         $namespace = 'migx';
         $this->modx->lexicon->load('tv_widget', $namespace . ':default');
         //$properties = isset($params['columns']) ? $params : $this->getProperties();

@@ -26,7 +26,8 @@
         //,queryMode: 'local'
         ,hideTrigger:true
         ,anchor: '100%' 
-        ,pageSize: 10          
+        ,pageSize: 10  
+        ,minChars: 1        
         ,listConfig: {
             //loadingText: 'Searching...',
             //emptyText: 'No matching posts found.',
@@ -47,7 +48,7 @@
                     'HTTP_MODAUTH':'[[+request.HTTP_MODAUTH]]',
                     'configs':'[[+request.configs]]',
                     'action':'mgr/migxdb/process',
-                    'processaction':'getlivesearch'
+                    'processaction':'[[+params.processaction:isnot=``:then=`[[+params.processaction]]`:else=`getlivesearch`]]'
                     }, 
                 reader: {
                     type: 'json',

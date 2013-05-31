@@ -23,6 +23,7 @@ $buttonsoutput = array();
 if (!empty($buttons)) {
     if (is_array($buttons)) {
         foreach ($buttons as $button) {
+            $prop['id'] = $modx->getOption('id', $button, '');
             $prop['text'] = $modx->getOption('text', $button, '');
             $prop['iconCls'] = $modx->getOption('iconCls', $button, '');
             $prop['configs'] = $modx->getOption('configs', $button, 'childstutorial');
@@ -40,7 +41,7 @@ if (!empty($buttons)) {
     }
 }
 
-
+$properties['customhandlers'] = $modx->getOption('customhandlers',$scriptProperties,'');
 $properties['buttons'] = implode(',', $buttonsoutput);
 $properties['auth'] = $_SESSION["modx.mgr.user.token"];
 $properties['resource_id'] = $modx->resource->get('id');
@@ -89,6 +90,7 @@ $modx->regClientCSS('assets/components/migxfe/js/ext4/resources/css/ext-all-gray
 $modx->regClientCSS('assets/components/migxfe/css/reset.css');
 $modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-all-debug.js');
 $modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-theme-gray.js');
+$modx->regClientStartupScript('assets/components/migxfe/js/xtypes/datetime.js');
 
 $scriptPath = $migxfe->config['templatesPath'] . 'web/app.tpl';
 $script = $migxfe->parseChunk($scriptPath, $properties);

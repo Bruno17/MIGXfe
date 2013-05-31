@@ -117,10 +117,13 @@ class migxFormProcessor extends modProcessor {
         $formcaption = str_replace(array("\n", "\r"), array("\\n", "\\r"), $formcaption);
 
         $o_array = array();
+        
         if ($object) {
             $o_array = $object->toArray();
         }
-
+        
+        $o_array['id'] = empty($o_array['id']) ? 'new' : $o_array['id'];
+        
         $template = '@FILE winbuttons.tpl';
         $parser = new migxfeChunkie($template, $corePath . 'templates/web/form/');
         $parser->createVars($controller->getPlaceholders());

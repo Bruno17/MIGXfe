@@ -69,6 +69,7 @@ Ext.application({
             items:[ [[+buttons]] ]
         });
     },
+    [[+customhandlers]]
     onButtonClick: function(){
         var _this= MigxFe.app;
         var config = this.data;
@@ -190,7 +191,7 @@ Ext.application({
                     */
                 }
             });
-            console.log(dialog);
+            //console.log(dialog);
             dialog.dialogelfinder('open');
             return dialog;
     }         

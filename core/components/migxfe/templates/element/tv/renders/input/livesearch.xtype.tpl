@@ -8,10 +8,9 @@ Ext.define('MigxFe.input.livesearch' ,{
         var field = Ext.get(this.valuename);
         this.callParent(arguments);
         if (field){
-            this.setValue(field.getValue());
+            this.setRawValue(field.getValue());
         }
-        console.log(this);
-        
+               
     }
 });
 </script>

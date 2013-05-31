@@ -1,4 +1,5 @@
 {
+    [[+id:isnot=``:then=`id:'[[+id]]',`:else=``]] 
     text: '[[+text]]',
     iconCls: '[[+iconCls]]',
     data: {
