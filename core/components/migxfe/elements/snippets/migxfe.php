@@ -23,6 +23,15 @@ $buttonsoutput = array();
 if (!empty($buttons)) {
     if (is_array($buttons)) {
         foreach ($buttons as $button) {
+            $prop['extraparams'] = '';
+            $extraparams = $modx->getOption('extraparams', $button, '');
+            if (is_array($extraparams) && count($extraparams) > 0) {
+                foreach ($extraparams as $key => $value) {
+                    $params[] = "'" . $key . "':'" . $value . "'";
+                }
+                $prop['extraparams'] = ',' . implode(',', $params);
+            }
+
             $prop['id'] = $modx->getOption('id', $button, '');
             $prop['text'] = $modx->getOption('text', $button, '');
             $prop['iconCls'] = $modx->getOption('iconCls', $button, '');
@@ -41,7 +50,7 @@ if (!empty($buttons)) {
     }
 }
 
-$properties['customhandlers'] = $modx->getOption('customhandlers',$scriptProperties,'');
+$properties['customhandlers'] = $modx->getOption('customhandlers', $scriptProperties, '');
 $properties['buttons'] = implode(',', $buttonsoutput);
 $properties['auth'] = $_SESSION["modx.mgr.user.token"];
 $properties['resource_id'] = $modx->resource->get('id');
@@ -88,7 +97,9 @@ handler: this.onButtonClick
 $modx->regClientCSS('assets/components/migxfe/js/ext4/resources/css/ext-all.css');
 $modx->regClientCSS('assets/components/migxfe/js/ext4/resources/css/ext-all-gray.css');
 $modx->regClientCSS('assets/components/migxfe/css/reset.css');
+//$modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-all.js');
 $modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-all-debug.js');
+//$modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-debug.js');
 $modx->regClientStartupScript('assets/components/migxfe/js/ext4/ext-theme-gray.js');
 $modx->regClientStartupScript('assets/components/migxfe/js/xtypes/datetime.js');
 

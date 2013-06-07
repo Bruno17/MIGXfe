@@ -19,8 +19,6 @@ class modTemplateVarInputRenderMigx extends modTemplateVarInputRenderMigxFe {
         require_once dirname(dirname(dirname(dirname(__file__)))) . '/model/migxfe/migxfe.class.php';
         $this->migx = new MigxFe($this->modx, $properties);
         
-        
-                
         /* get input-tvs */
         $this->migx->loadConfigs();
 

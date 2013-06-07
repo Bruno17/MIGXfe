@@ -54,7 +54,8 @@
     hiddenFieldName: 'tv[[+tv.id]]', 
     valuename:'original[[+request.win_id]]-[[+tv.id]]',
     win_id:'[[+request.win_id]]',
-    tv_name:'[[+tv.name]]'
+    tv_name:'[[+tv.name]]',
+    configs:'[[+configs]]'
 },{
         xtype: 'migxValueHidden',
         id:'tv[[+tv.id]]-[[+request.win_id]]',

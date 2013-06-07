@@ -850,7 +850,7 @@ class MigxFe {
         //print_r(array_keys($this->customconfigs));
 
         //$controller->setPlaceholder('i18n', $this->migxi18n);
-
+        
         $controller->setPlaceholder('tv_id', $tv_id);
         $controller->setPlaceholder('migx_lang', $this->modx->toJSON($this->migxlang));
         $controller->setPlaceholder('properties', $properties);

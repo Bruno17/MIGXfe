@@ -38,14 +38,15 @@ Ext.define('MigxFe.updatewindow' ,{
 });
 
 Ext.define('MigxFe.combo.Browser' ,{
-    extend: 'Ext.form.TriggerField',
+    extend: 'Ext.form.field.Trigger',
     alias: 'widget.migx-combo-browser',
     triggerAction: 'all',
-    dialog: null,
+    dialog: 'init',
     onTriggerClick : function(btn){
         if (this.disabled){
             return false;
         }
+        //console.log(this);
         dialog = MigxFe.app.openBrowser(this);
         if (dialog){
             this.dialog = dialog;
@@ -161,25 +162,38 @@ Ext.application({
     }
 
     ,openBrowser: function(field){
-            if (typeof(field.dialog) == 'function' ){
-                field.dialog('destroy');
+            
+            var params = field.params || {};
+            params['HTTP_MODAUTH'] = '[[+auth]]';
+            params['action'] = 'web/browser/elfinderconnector';
+            params['wctx'] = '[[+wctx]]';            
+            
+            //console.log(typeof(field.dialog));
+            //console.log(field.dialog);
+            
+            if (field.dialog != 'init' ){
+                //console.log(field.dialog.dialogelfinder('instance'));
+                //field.dialog.dialogelfinder('instance').sync();
+                //field.dialog.dialogelfinder('destroy');
             }
-            dialog = $('#elfinder').dialogelfinder({
+            console.log(typeof(field.dialog));
+
+            //console.log(params);
+         
+            var dialog = $('#elfinder').dialogelfinder({
                 url: 'assets/components/migxfe/connector.php',
                 modal: true,
-                customData : {
-                    'HTTP_MODAUTH': '[[+auth]]',
-                    'action':'web/browser/elfinderconnector'
-                        
-                },                
+                customData : params,                
                 commandsOptions: {
                     getfile: {
-                        oncomplete: 'destroy'
+                        oncomplete: 'close'
                         //,multiple : true
                     }
                 }
                 ,getFileCallback: function(file) {
-                    field.setValue(file.path);
+                    console.log(this.fm.field);
+                    console.log(field);
+                    this.fm.field.setValue(file.path.replace('//',''));
                     //select_elfinder_files(files)
                     //fileCopier(files);
                 }
@@ -191,8 +205,31 @@ Ext.application({
                     */
                 }
             });
-            //console.log(dialog);
-            dialog.dialogelfinder('open');
+
+            var dialog_instance = $('#elfinder').dialogelfinder('instance');
+            console.log(typeof(dialog_instance.initialised));
+            if (typeof(dialog_instance.initialised) != 'undefined'){
+                if (dialog_instance.visible()){
+                    //if dialog open, do nothing    
+                } else {
+                    if (dialog_instance.initialised){
+                        dialog_instance.customData = params;
+                        dialog_instance.options.customData = params;
+                        dialog_instance.sync();
+                        dialog.dialogelfinder('open');  
+                    }                    
+                }
+            }
+            console.log(dialog_instance);
+            console.log('visible:' + dialog_instance.visible());
+
+            
+            dialog.css('top','50');
+            console.log(dialog.css('z-index'));
+            dialog.css('z-index','100000');
+            dialog_instance.initialised = true;
+            dialog_instance.field = field;
+            
             return dialog;
     }         
     

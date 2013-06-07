@@ -13,6 +13,7 @@
         'field':'[[+field]]',
         'action':'[[+action]]',
         'processaction':'[[+processaction]]'
+        [[+extraparams]]
     },
     handler: [[+handler]]
 }

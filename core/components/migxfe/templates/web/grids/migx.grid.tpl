@@ -76,7 +76,7 @@ $phpthumb = "'+MODx.config.connectors_url+'system/phpthumb.php?h=60&src='+val+so
 $phpthumbimg = '<img src="'.$phpthumb.'" alt="" />';
 */        
         var connector_url = '/connectors/';
-        console.log(rec);
+        //console.log(rec);
         
         //var source = s.pathconfigs[col];
         var source = '&source=1';
@@ -225,7 +225,7 @@ $phpthumbimg = '<img src="'.$phpthumb.'" alt="" />';
       var params={
           win_id : 'testtest',
           action: 'web/migx/fields',
-          configs: '',
+          configs: this.configs,
           tv_name: this.tv_name,
           record_json: json,
           grid_id: this.getId(),

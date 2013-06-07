@@ -41,7 +41,7 @@ if (win){
        beforeaction: function(){
            var win = Ext.getCmp('[[+request.win_id]]');
            var v = this.getValues(); 
-           console.log(v);
+           //console.log(v);
            var tv_type = '[[+tv.type]]';
            var object_id = '[[+object.id]]';
            if (this.isValid()) {
